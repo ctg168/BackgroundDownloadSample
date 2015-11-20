@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_marginTop="94dp"
         android:text="BIND SERVICE" />
 
-  <Button
+    <Button
         android:id="@+id/button2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,21 +30,22 @@
 
     <Button
         android:id="@+id/button3"
-        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="CREATE A TIP" />
+
 
     <Button
         android:id="@+id/button4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SHOW NOTIFICATION" />
+        android:layout_marginTop="50dp"
+        android:text="Download Start" />
 
     <Button
         android:id="@+id/button5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CLOSE NOTIFICATION" />
+        android:text="Cancel" />
 
 </LinearLayout>

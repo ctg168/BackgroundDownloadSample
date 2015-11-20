@@ -1,24 +1,27 @@
 package com.terry.backgrounddownloadsample;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.util.Log;
-
-import java.util.UUID;
+import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import static com.terry.backgrounddownloadsample.LogUtil.LogE;
 
 public class DownloadService extends Service {
-    private static final String TAG = "TDService";
 
+    private NotificationManager mNotificationManager;
+    private NotificationCompat.Builder mBuilder;
+
+    private static final String TAG = "TDService";
 
     public DownloadService() {
     }
-
 
     @Override
     public void onCreate() {
@@ -34,6 +37,31 @@ public class DownloadService extends Service {
     //接收DownloadThread里面传过来的值，并输出到控制台
     public void updateProgress(String... values) {
         LogE(String.format("%s: %s/%s (%s)", values[0], values[1], values[2], values[3]));
+
+    }
+
+    private void showNotify(String status) {
+        RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.noti_download_panel);
+        // setting remoteview init style.
+        //...
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, new Intent(), 0);
+
+        mBuilder.setContent(mRemoteViews)
+                .setContentIntent(pendingIntent)
+                .setTicker("down...");
+
+//        Notification notify = mBuilder.build();
+//        notify.contentView = mRemoteViews;
+
+        mNotificationManager.notify(0, mBuilder.build());
+
+
+    }
+
+    private void setNotify(int progress) {
+        mBuilder.setProgress(100, progress, false);//显示进度条
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @Override
@@ -45,8 +73,15 @@ public class DownloadService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        LogE("TDService.onBind");
+        LogE("DownloadService.onBind");
         return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        LogE("DownloadService.onUnbind");
+
+        return super.onUnbind(intent);
     }
 
     private MyBinder mBinder = new MyBinder();
