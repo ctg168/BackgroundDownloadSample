@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -25,6 +24,8 @@ import android.widget.RemoteViews;
 
 
 import java.util.UUID;
+
+import javax.xml.transform.Result;
 
 import static com.terry.backgrounddownloadsample.LogUtil.LogE;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             LogE("MainActivity.onServiceConnected");
             downloadService = ((DownloadService.MyBinder) service).getService();
-            downloadService.startDownLoad();
+
         }
 
         @Override
@@ -88,7 +89,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClickToOpen_Notificaion(MainActivity.this);
+                //ClickToOpen_Notificaion(MainActivity.this);
+                //ShowCompleteView(MainActivity.this);
+                //downloadService.startDownLoad();
+                DownloadService.DownloadTask downloadTask = new DownloadService.DownloadTask();
+
+                downloadTask.TaskName = UUID.randomUUID().toString();
+                downloadTask.Total = 20;
+                downloadTask.progress = 0;
+
+                downloadService.startDownLoad(downloadTask);
+
             }
         });
 
@@ -104,36 +115,124 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
-
-    private void showMedia(Context context){
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.noti);
-
-        MediaSessionCompat mediaSession = null;
-
-        Notification noti = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.ic_noti_icon)
-                .setContentTitle("Track title")
-                .setContentText("Artist - Album")
-                .setLargeIcon(bitmap)
-                .setStyle(new Notification.MediaStyle())
-                        //.setMediaSession(mediaSession))
-                .build();
-
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(222, noti);
-    }
-
-    private void ClickToOpen_Notificaion(Context context) {
-        //ClickToOpen(context);
-        //ClickToOpen(context);
-        //return;
+    //normal view with action.
+    private void ShowCompleteView(Context context) {
 
         int defaultTipId = 2001;
         int defaultNotiIcon = R.drawable.ic_noti_icon;
         String defaultTitle = "来自佳腾培训系统的通知";
 
+        if (context == MainActivity.this) {
+            System.out.println("MainActivity.ShowCompleteView");
+        }
+
+        Intent resultIntent = new Intent(context, ResultActivity.class);
+
+        resultIntent.putExtra("Action", "Play");
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(ResultActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.noti);
+
+        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+                .setSmallIcon(defaultNotiIcon)
+                .setLargeIcon(largeIcon)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle("Normal notification")
+                .setContentText("this is an exmaples of a NORMAL style.")
+                .addAction(R.drawable.ic_action_playback_play, "", resultPendingIntent)
+                .addAction(R.drawable.ic_action_playback_prev, "", resultPendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(defaultTipId, mBuilder.build());
+
+    }
+
+    //With big view without action.
+    private void ShowCompleteView2(Context context) {
+
+        int defaultTipId = 2001;
+        int defaultNotiIcon = R.drawable.ic_noti_icon;
+        String defaultTitle = "来自佳腾培训系统的通知";
+
+        NotificationCompat.BigPictureStyle notiStyle = new android.support.v4.app.NotificationCompat.BigPictureStyle();
+        notiStyle.setBigContentTitle("Big Text Expanded");
+        notiStyle.setSummaryText("Nice big text.");
+
+        Bitmap remote_picture = BitmapFactory.decodeResource(getResources(), R.drawable.aliwall_icon);
+
+        CharSequence bigText = "This is an example of a large string to demo how much " +
+                "text you can show in a 'Big Text Style' notification.";
+        notiStyle.setSummaryText(bigText);
+
+        notiStyle.bigPicture(remote_picture);
+
+
+        Intent resultIntent = new Intent(context, ResultActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(ResultActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+                .setSmallIcon(defaultNotiIcon)
+                .setAutoCancel(true)
+                .setLargeIcon(remote_picture)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle("Normal notification")
+                .setContentText("this is an exmaples of a NORMAL style.")
+                .setStyle(notiStyle);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(defaultTipId, mBuilder.build());
+
+    }
+
+
+    private void CustomViewAndServiceControl(Context context) {
+
+    }
+
+    public void showButtonNotify() {
+
+    }
+
+
+    private void showMedia(Context context) {
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.noti_normal_view);
+//
+//        MediaSessionCompat mediaSession = null;
+//
+//        Notification noti_normal_view = new Notification.Builder(context)
+//                .setSmallIcon(R.drawable.ic_noti_icon)
+//                .setContentTitle("Track title")
+//                .setContentText("Artist - Album")
+//                .setLargeIcon(bitmap)
+//                .setStyle(new Notification.MediaStyle())
+//                        //.setMediaSession(mediaSession))
+//                .build();
+//
+//        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        notificationManager.notify(222, noti_normal_view);
+    }
+
+    private void ClickToOpen_Notificaion(Context context) {
+
+
+        int defaultTipId = 2001;
+        int defaultNotiIcon = R.drawable.ic_noti_icon;
+        String defaultTitle = "来自佳腾培训系统的通知";
 
         Intent resultIntent = new Intent(this, ResultActivity.class);
+
+        resultIntent.putExtra(getPackageName() + ".RequestCode", 1);
+
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(ResultActivity.class);
@@ -141,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
         PendingIntent pendingIntent1 = stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntent2 = stackBuilder.getPendingIntent(2, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent pendingIntent3 = stackBuilder.getPendingIntent(3,  PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent3 = stackBuilder.getPendingIntent(3, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setSmallIcon(defaultNotiIcon)
@@ -160,10 +259,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private RemoteViews getRView(Context context)
-    {
+    private RemoteViews getRView(Context context) {
 
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.noti);
+        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.noti_normal_view);
 
 
         contentView.setImageViewResource(R.id.img_noti, R.drawable.noti);
@@ -177,38 +275,6 @@ public class MainActivity extends AppCompatActivity {
         return contentView;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void ShowCustView(Context context) {
-
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(context);
-        PendingIntent pending = PendingIntent.getActivity(context, 1, new Intent(), 0);
-
-        builder.setContentIntent(pending).setSmallIcon(R.mipmap.ic_launcher)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(false); //为true的话，一点就消失;
-
-        Notification notification = builder.build();
-
-
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.noti);
-
-
-        contentView.setImageViewResource(R.id.img_noti, R.drawable.noti);
-
-        contentView.setTextViewText(R.id.txt_noti_title, "提示");
-        contentView.setTextViewTextSize(R.id.txt_noti_title, TypedValue.COMPLEX_UNIT_SP, 16.0F);
-
-        contentView.setTextViewText(R.id.txt_noti_body, "您有新的消息！");
-        contentView.setTextViewTextSize(R.id.txt_noti_body, TypedValue.COMPLEX_UNIT_SP, 12.0F);
-
-
-        notification.contentView = (RemoteViews) contentView;
-        notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_SHOW_LIGHTS;
-
-
-        notificationManager.notify(0, notification);
-    }
 
     private void ShowPlayerView(Context context) {
 //        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -269,17 +335,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    private void ClickToOpen(Context context) {
-        //Example 1: 触摸打开一个activity.
-        Intent resultIntent = new Intent(context, ResultActivity.class);
-
-        JetNotificationManager.showTip(context, JetNotificationManager.defaultTipId + 1, R.drawable.ic_action_playback_next,
-                "info",
-                "content",
-                resultIntent
-        );
-    }
 
     @Override
     protected void onStop() {

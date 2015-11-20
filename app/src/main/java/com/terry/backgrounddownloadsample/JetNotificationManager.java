@@ -75,9 +75,9 @@ public class JetNotificationManager {
 //                .setContentText(body);
 //        Notification notification = builder.build();
 //
-//        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.noti);
+//        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.noti_normal_view);
 //
-//        contentView.setImageViewResource(R.id.img_noti, R.drawable.noti);
+//        contentView.setImageViewResource(R.id.img_noti, R.drawable.noti_normal_view);
 //
 //        contentView.setTextViewText(R.id.txt_noti_title, tittle);
 //        contentView.setTextViewTextSize(R.id.txt_noti_title, TypedValue.COMPLEX_UNIT_SP, 16.0F);
