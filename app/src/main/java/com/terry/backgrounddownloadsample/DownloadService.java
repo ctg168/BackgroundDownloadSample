@@ -26,17 +26,22 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        mBuilder = new NotificationCompat.Builder(this);
 
     }
 
     public void startDownLoad(DownloadTask downloadTask) {
         DownloadThread downloadThread = new DownloadThread(downloadTask);
         downloadThread.execute();
+        showNotify("abc");
     }
 
     //接收DownloadThread里面传过来的值，并输出到控制台
     public void updateProgress(String... values) {
         LogE(String.format("%s: %s/%s (%s)", values[0], values[1], values[2], values[3]));
+
 
     }
 
