@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // ShowProgressNotification();
+                cancelDownload();
             }
         });
     }
@@ -87,8 +87,12 @@ public class MainActivity extends AppCompatActivity {
         DownloadService.DownloadTask downloadTask = new DownloadService.DownloadTask();
         downloadTask.TaskName = UUID.randomUUID().toString();
         downloadTask.Total = 20;
-        downloadTask.progress = 0;
+        downloadTask.Progress = 0;
         downloadService.startDownLoad(downloadTask);
+    }
+
+    private void cancelDownload(){
+
     }
 
     @Override
